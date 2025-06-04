@@ -101,20 +101,24 @@ h2 {
 }
 
 .cta-btn {
-  background-color: #facc15;
-  color: #1e293b;
-  padding: 1rem 2rem;
-  border-radius: 12px;
-  font-weight: bold;
+  display: inline-block;
+  padding: 12px 24px;
+  background-color: #007BFF;
+  color: white;
   text-decoration: none;
-  font-size: 1.1rem;
-  transition: transform 0.2s ease, background-color 0.3s ease;
+  font-weight: bold;
+  border-radius: 8px;
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
 }
 
 .cta-btn:hover {
-  background-color: #fde047;
+  box-shadow: 0 0 20px rgba(0, 123, 255, 0.9), 0 0 30px rgba(0, 123, 255, 0.7);
   transform: scale(1.05);
 }
+
+
+
 
 #contact a {
   color: #7dd3fc;
