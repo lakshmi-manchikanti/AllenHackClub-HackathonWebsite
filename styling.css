@@ -42,7 +42,7 @@ section {
 .hero {
   text-align: center;
   padding: 2rem;
-  background: radial-gradient(circle, #1e293b, #0f172a);
+  background: radial-gradient(circle, #3a109c, #3a109c);
   border-radius: 1rem;
 }
 
@@ -75,7 +75,7 @@ section {
 #about,
 #faq,
 #contact {
-  background-color: #1e293b;
+  background-color: #3a109c;
   padding: 2rem;
   border-radius: 1rem;
 }
