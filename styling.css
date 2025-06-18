@@ -9,7 +9,7 @@ body {
   margin: 0;
   padding: 0;
   font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(#1098e1, #004466); /* Cool blue tone */
+  background: linear-gradient(#fffafa, #f0f8ff); /* snow to aliceblue */
   color: #fff;
   overflow-x: hidden;
 }
