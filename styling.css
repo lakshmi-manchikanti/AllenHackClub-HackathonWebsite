@@ -29,7 +29,9 @@ header h1 {
   z-index: 1;
   color: white;
 }
-
+header h1, header p {
+  margin: 0;
+}
 
 
 
