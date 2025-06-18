@@ -34,9 +34,9 @@ header h1 {
 
 
 header p {
-  margin: 0.5em 0 0;
-  font-size: 1.2em;
-  color: #ccc;
+  display: block;
+  width: 100%;
+  text-align: center;
 }
 
 main {
