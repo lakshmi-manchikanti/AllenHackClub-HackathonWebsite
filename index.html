@@ -13,42 +13,65 @@
   </header>
   <canvas id="matrix"></canvas>
   <script>
-  const canvas = document.getElementById('matrix');
-  const ctx = canvas.getContext('2d');
+const canvas = document.getElementById('matrix');
+const ctx = canvas.getContext('2d');
 
-  canvas.height = window.innerHeight;
-  canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+canvas.width = window.innerWidth;
 
-  const binary = "01";
-  const fontSize = 16;
-  const columns = Math.floor(canvas.width / fontSize);
-  const drops = new Array(columns).fill(1);
+// Create an array of snowflakes
+const snowflakes = [];
 
-  function draw() {
-    ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+function createSnowflakes(count) {
+  for (let i = 0; i < count; i++) {
+    snowflakes.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      radius: Math.random() * 3 + 1,
+      speed: Math.random() * 1 + 0.5,
+      drift: Math.random() * 1 - 0.5
+    });
+  }
+}
 
-    ctx.fillStyle = "#53a712"; // Binary green
-    ctx.font = `${fontSize}px monospace`;
+function drawSnowflakes() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = "white";
+  ctx.beginPath();
+  for (const flake of snowflakes) {
+    ctx.moveTo(flake.x, flake.y);
+    ctx.arc(flake.x, flake.y, flake.radius, 0, Math.PI * 2);
+  }
+  ctx.fill();
+  updateSnowflakes();
+}
 
-    for (let i = 0; i < drops.length; i++) {
-      const text = binary[Math.floor(Math.random() * binary.length)];
-      ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+function updateSnowflakes() {
+  for (const flake of snowflakes) {
+    flake.y += flake.speed;
+    flake.x += flake.drift;
 
-      if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-        drops[i] = 0;
-      }
-      drops[i]++;
+    if (flake.y > canvas.height) {
+      flake.y = -flake.radius;
+      flake.x = Math.random() * canvas.width;
+    }
+
+    if (flake.x > canvas.width) {
+      flake.x = 0;
+    } else if (flake.x < 0) {
+      flake.x = canvas.width;
     }
   }
+}
 
-  setInterval(draw, 50);
+createSnowflakes(150);
+setInterval(drawSnowflakes, 33);
 
-  // Optional: Handle resize
-  window.addEventListener('resize', () => {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-  });
+// Handle window resize
+window.addEventListener('resize', () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
 </script>
 
   <main>
