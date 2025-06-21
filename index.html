@@ -16,13 +16,81 @@
 const canvas = document.getElementById('matrix');
 const ctx = canvas.getContext('2d');
 
+// Resize canvas
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
+// === GLOBAL ARRAYS ===
 const snowflakes = [];
 const cars = [];
+const buildings = [];
 
-// Create snowflakes
+// === BUILDINGS ===
+function generateBuildings() {
+  buildings.length = 0;
+  const count = 12;
+  const width = canvas.width / count;
+
+  for (let i = 0; i < count; i++) {
+    const height = Math.random() * canvas.height * 0.4 + canvas.height * 0.3;
+    buildings.push({
+      x: i * width,
+      y: canvas.height - height,
+      width: width - 4,
+      height,
+      color: '#444'
+    });
+  }
+}
+
+function drawBuildings() {
+  for (const b of buildings) {
+    ctx.fillStyle = b.color;
+    ctx.fillRect(b.x, b.y, b.width, b.height);
+  }
+}
+
+// === CARS ===
+function createCars(count) {
+  for (let i = 0; i < count; i++) {
+    cars.push({
+      x: Math.random() * canvas.width,
+      y: canvas.height - 50 + Math.random() * 10,
+      width: 40,
+      height: 20,
+      speed: 1 + Math.random(),
+      color: '#999'
+    });
+  }
+}
+
+function drawCars() {
+  for (const car of cars) {
+    // Car body
+    ctx.fillStyle = car.color;
+    ctx.fillRect(car.x, car.y, car.width, car.height);
+
+    // Wheels
+    ctx.fillStyle = '#222';
+    ctx.beginPath();
+    ctx.arc(car.x + 6, car.y + car.height, 4, 0, Math.PI * 2);
+    ctx.arc(car.x + car.width - 6, car.y + car.height, 4, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Windshield
+    ctx.fillStyle = '#ccc';
+    ctx.fillRect(car.x + 10, car.y + 4, car.width - 20, 5);
+
+    // Move car
+    car.x += car.speed;
+    if (car.x > canvas.width) {
+      car.x = -car.width;
+      car.y = canvas.height - 50 + Math.random() * 10;
+    }
+  }
+}
+
+// === SNOWFLAKES ===
 function createSnowflakes(count) {
   for (let i = 0; i < count; i++) {
     snowflakes.push({
@@ -35,47 +103,6 @@ function createSnowflakes(count) {
   }
 }
 
-// Create cars
-function createCars(count) {
-  for (let i = 0; i < count; i++) {
-    cars.push({
-      x: Math.random() * canvas.width,
-      y: canvas.height - 60 + Math.random() * 20,
-      width: 40,
-      height: 20,
-      speed: 1 + Math.random() * 1,
-      color: '#999'
-    });
-  }
-}
-
-// Draw buildings
-function drawBuildings() {
-  const buildingCount = 10;
-  const buildingWidth = canvas.width / buildingCount;
-
-  for (let i = 0; i < buildingCount; i++) {
-    const height = Math.random() * canvas.height * 0.5 + canvas.height * 0.2;
-    ctx.fillStyle = '#444';
-    ctx.fillRect(i * buildingWidth, canvas.height - height, buildingWidth - 4, height);
-  }
-}
-
-// Draw cars
-function drawCars() {
-  for (const car of cars) {
-    ctx.fillStyle = car.color;
-    ctx.fillRect(car.x, car.y, car.width, car.height);
-    car.x += car.speed;
-
-    if (car.x > canvas.width) {
-      car.x = -car.width;
-      car.y = canvas.height - 60 + Math.random() * 20;
-    }
-  }
-}
-
-// Draw snowflakes
 function drawSnowflakes() {
   ctx.fillStyle = "white";
   ctx.beginPath();
@@ -96,26 +123,21 @@ function updateSnowflakes() {
       flake.y = -flake.radius;
       flake.x = Math.random() * canvas.width;
     }
-
-    if (flake.x > canvas.width) {
-      flake.x = 0;
-    } else if (flake.x < 0) {
-      flake.x = canvas.width;
-    }
+    if (flake.x > canvas.width) flake.x = 0;
+    if (flake.x < 0) flake.x = canvas.width;
   }
 }
 
+// === MAIN ANIMATION LOOP ===
 function animate() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-
   drawBuildings();
   drawCars();
   drawSnowflakes();
-
   requestAnimationFrame(animate);
 }
 
-// Handle resize
+// === HANDLE RESIZE ===
 window.addEventListener('resize', () => {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
@@ -123,14 +145,15 @@ window.addEventListener('resize', () => {
   cars.length = 0;
   createSnowflakes(150);
   createCars(5);
+  generateBuildings();
 });
 
-// Init
+// === INIT ===
 createSnowflakes(150);
 createCars(5);
+generateBuildings();
 animate();
 </script>
-
   <main>
     <section class="hero">
       <h2>Code. Create. Collaborate.</h2>
