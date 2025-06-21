@@ -16,30 +16,51 @@
 const canvas = document.getElementById('matrix');
 const ctx = canvas.getContext('2d');
 
-// Resize canvas
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-// === GLOBAL ARRAYS ===
 const snowflakes = [];
 const cars = [];
 const buildings = [];
 
-// === BUILDINGS ===
+// === BUILDINGS WITH RANDOM SIZE & COLOR ===
 function generateBuildings() {
   buildings.length = 0;
-  const count = 12;
-  const width = canvas.width / count;
+  let x = 0;
 
-  for (let i = 0; i < count; i++) {
+  while (x < canvas.width) {
+    const width = Math.random() * 60 + 40; // 40–100px wide
     const height = Math.random() * canvas.height * 0.4 + canvas.height * 0.3;
-    buildings.push({
-      x: i * width,
-      y: canvas.height - height,
+    const gray = Math.floor(Math.random() * 100) + 100; // 100–200 brightness
+    const color = `rgb(${gray}, ${gray}, ${gray})`;
+
+    const building = {
+      x: x,
+      y: canvas.height - height - 100,
       width: width - 4,
       height,
-      color: '#444'
-    });
+      color,
+      windows: []
+    };
+
+    // Add windows
+    const rows = Math.floor(building.height / 20);
+    const cols = Math.floor(building.width / 15);
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        if (Math.random() > 0.5) {
+          building.windows.push({
+            x: building.x + c * 15 + 5,
+            y: building.y + r * 20 + 5,
+            w: 6,
+            h: 10
+          });
+        }
+      }
+    }
+
+    buildings.push(building);
+    x += width;
   }
 }
 
@@ -47,15 +68,38 @@ function drawBuildings() {
   for (const b of buildings) {
     ctx.fillStyle = b.color;
     ctx.fillRect(b.x, b.y, b.width, b.height);
+
+    // Draw windows
+    ctx.fillStyle = '#ffeb3b';
+    for (const w of b.windows) {
+      ctx.fillRect(w.x, w.y, w.w, w.h);
+    }
   }
+}
+
+// === ROAD ===
+function drawRoad() {
+  const roadHeight = 60;
+  ctx.fillStyle = '#333';
+  ctx.fillRect(0, canvas.height - roadHeight, canvas.width, roadHeight);
+
+  ctx.strokeStyle = '#bbb';
+  ctx.setLineDash([20, 15]);
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(0, canvas.height - roadHeight / 2);
+  ctx.lineTo(canvas.width, canvas.height - roadHeight / 2);
+  ctx.stroke();
+  ctx.setLineDash([]);
 }
 
 // === CARS ===
 function createCars(count) {
+  cars.length = 0;
   for (let i = 0; i < count; i++) {
     cars.push({
       x: Math.random() * canvas.width,
-      y: canvas.height - 50 + Math.random() * 10,
+      y: canvas.height - 70 + Math.random() * 10,
       width: 40,
       height: 20,
       speed: 1 + Math.random(),
@@ -66,7 +110,6 @@ function createCars(count) {
 
 function drawCars() {
   for (const car of cars) {
-    // Car body
     ctx.fillStyle = car.color;
     ctx.fillRect(car.x, car.y, car.width, car.height);
 
@@ -81,17 +124,18 @@ function drawCars() {
     ctx.fillStyle = '#ccc';
     ctx.fillRect(car.x + 10, car.y + 4, car.width - 20, 5);
 
-    // Move car
+    // Move
     car.x += car.speed;
     if (car.x > canvas.width) {
       car.x = -car.width;
-      car.y = canvas.height - 50 + Math.random() * 10;
+      car.y = canvas.height - 70 + Math.random() * 10;
     }
   }
 }
 
 // === SNOWFLAKES ===
 function createSnowflakes(count) {
+  snowflakes.length = 0;
   for (let i = 0; i < count; i++) {
     snowflakes.push({
       x: Math.random() * canvas.width,
@@ -128,30 +172,29 @@ function updateSnowflakes() {
   }
 }
 
-// === MAIN ANIMATION LOOP ===
+// === ANIMATION LOOP ===
 function animate() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+  drawRoad();
   drawBuildings();
   drawCars();
   drawSnowflakes();
   requestAnimationFrame(animate);
 }
 
-// === HANDLE RESIZE ===
+// === RESIZE HANDLER ===
 window.addEventListener('resize', () => {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
-  snowflakes.length = 0;
-  cars.length = 0;
-  createSnowflakes(150);
-  createCars(5);
   generateBuildings();
+  createCars(5);
+  createSnowflakes(150);
 });
 
 // === INIT ===
-createSnowflakes(150);
-createCars(5);
 generateBuildings();
+createCars(5);
+createSnowflakes(150);
 animate();
 </script>
   <main>
