@@ -94,17 +94,17 @@ section {
 h2 {
   font-size: 1.8rem;
   margin-bottom: 1rem;
-  color: #38bdf8;
+  color: #ffffff;
 }
 
 .faq h3 {
-  color: #facc15;
+  color: #ffffff;
   margin-bottom: 0.2rem;
 }
 
 .faq p {
   margin-bottom: 1.2rem;
-  color: #cbd5e1;
+  color: #0073ff;
 }
 
 .cta {
@@ -129,7 +129,7 @@ h2 {
 }
 
 #contact a {
-  color: #7dd3fc;
+  color: #ffffff;
   text-decoration: underline;
 }
 
@@ -137,7 +137,7 @@ footer {
   text-align: center;
   padding: 2rem 1rem;
   background-color: #1e293b;
-  color: #94a3b8;
+  color: #0073ff;
   font-size: 0.9rem;
 }
 
