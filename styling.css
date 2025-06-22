@@ -136,17 +136,20 @@ footer {
   border-radius: 12px 12px 0 0;
   box-shadow: 0 0 10px rgba(0,0,0,0.6);
   position: relative;
-  margin: 2rem auto;
+  margin: 2rem auto 0 auto; /* add margin-bottom 0 here */
   max-width: max-content;
 }
 
+/* Laptop base below the screen */
 .laptop-base {
-  width: 120px;
-  height: 20px;
-  background: #555; /* laptop base color */
-  border-radius: 0 0 12px 12px;
+  width: 140px; /* slightly wider */
+  height: 25px;
+  background: #555;
+  border-radius: 0 0 16px 16px;
   margin: 0 auto;
   box-shadow: inset 0 -3px 5px rgba(0,0,0,0.4);
-  position: relative;
-  top: -5px;
+  /* Remove position and top */
+  /* position: relative; */
+  /* top: -5px; */
+  margin-top: 5px; /* space below the screen */
 }
