@@ -23,16 +23,20 @@ const snowflakes = [];
 const cars = [];
 const buildings = [];
 
-// === BUILDINGS WITH RANDOM SIZE & COLOR ===
+// === BUILDINGS WITH RANDOM SIZE, COLOR, AND OPTIONAL TOWERS ===
 function generateBuildings() {
   buildings.length = 0;
   let x = 0;
 
   while (x < canvas.width) {
-    const width = Math.random() * 60 + 40; // 40–100px wide
-    const height = Math.random() * canvas.height * 0.4 + canvas.height * 0.3;
-    const gray = Math.floor(Math.random() * 100) + 100; // 100–200 brightness
+    const width = Math.random() * 30 + 30; // 30–60px wide
+    const height = Math.random() * canvas.height * 0.2 + canvas.height * 0.2; // 20%–40% height
+    const gray = Math.floor(Math.random() * 100) + 100; // light gray shades
     const color = `rgb(${gray}, ${gray}, ${gray})`;
+
+    // Decide if this building has a tower (30% chance)
+    const hasTower = Math.random() < 0.3;
+    const towerHeight = hasTower ? height * (0.3 + Math.random() * 0.5) : 0; // 30%–80% of building height
 
     const building = {
       x: x,
@@ -40,10 +44,14 @@ function generateBuildings() {
       width: width - 4,
       height,
       color,
-      windows: []
+      windows: [],
+      hasTower,
+      tower: {
+        width: (width - 4) * 0.4,
+        height: towerHeight,
+      }
     };
 
-    // Add windows
     const rows = Math.floor(building.height / 20);
     const cols = Math.floor(building.width / 15);
     for (let r = 0; r < rows; r++) {
@@ -59,6 +67,24 @@ function generateBuildings() {
       }
     }
 
+    // Add windows for tower if it exists
+    if (hasTower) {
+      const towerRows = Math.floor(building.tower.height / 20);
+      const towerCols = Math.floor(building.tower.width / 10);
+      for (let r = 0; r < towerRows; r++) {
+        for (let c = 0; c < towerCols; c++) {
+          if (Math.random() > 0.5) {
+            building.windows.push({
+              x: building.x + building.width/2 - building.tower.width/2 + c * 10 + 3,
+              y: building.y - building.tower.height + r * 20 + 5,
+              w: 5,
+              h: 8
+            });
+          }
+        }
+      }
+    }
+
     buildings.push(building);
     x += width;
   }
@@ -66,8 +92,16 @@ function generateBuildings() {
 
 function drawBuildings() {
   for (const b of buildings) {
+    // Draw main building
     ctx.fillStyle = b.color;
     ctx.fillRect(b.x, b.y, b.width, b.height);
+
+    // Draw tower if exists
+    if (b.hasTower) {
+      const towerX = b.x + b.width/2 - b.tower.width/2;
+      const towerY = b.y - b.tower.height;
+      ctx.fillRect(towerX, towerY, b.tower.width, b.tower.height);
+    }
 
     // Draw windows
     ctx.fillStyle = '#ffeb3b';
@@ -100,7 +134,7 @@ function createCars(count) {
     cars.push({
       x: Math.random() * canvas.width,
       y: canvas.height - 70 + Math.random() * 10,
-      width: 40,
+      width: 50,
       height: 20,
       speed: 1 + Math.random(),
       color: '#999'
@@ -111,23 +145,49 @@ function createCars(count) {
 function drawCars() {
   for (const car of cars) {
     ctx.fillStyle = car.color;
+
+    // Car body - main rectangle
     ctx.fillRect(car.x, car.y, car.width, car.height);
 
-    // Wheels
-    ctx.fillStyle = '#222';
+    // Hood (front slope) - trapezoid
     ctx.beginPath();
-    ctx.arc(car.x + 6, car.y + car.height, 4, 0, Math.PI * 2);
-    ctx.arc(car.x + car.width - 6, car.y + car.height, 4, 0, Math.PI * 2);
+    ctx.moveTo(car.x + car.width, car.y);
+    ctx.lineTo(car.x + car.width + 10, car.y);
+    ctx.lineTo(car.x + car.width + 10, car.y + car.height / 2);
+    ctx.lineTo(car.x + car.width, car.y + car.height / 2);
+    ctx.closePath();
     ctx.fill();
 
-    // Windshield
-    ctx.fillStyle = '#ccc';
-    ctx.fillRect(car.x + 10, car.y + 4, car.width - 20, 5);
+    // Rear trunk (rear slope) - trapezoid
+    ctx.beginPath();
+    ctx.moveTo(car.x, car.y);
+    ctx.lineTo(car.x - 10, car.y);
+    ctx.lineTo(car.x - 10, car.y + car.height / 2);
+    ctx.lineTo(car.x, car.y + car.height / 2);
+    ctx.closePath();
+    ctx.fill();
 
-    // Move
+    // Windshield - sloped polygon
+    ctx.fillStyle = '#ccc';
+    ctx.beginPath();
+    ctx.moveTo(car.x + 10, car.y);
+    ctx.lineTo(car.x + car.width - 10, car.y);
+    ctx.lineTo(car.x + car.width - 20, car.y + car.height / 2);
+    ctx.lineTo(car.x + 20, car.y + car.height / 2);
+    ctx.closePath();
+    ctx.fill();
+
+    // Wheels - circles
+    ctx.fillStyle = '#222';
+    ctx.beginPath();
+    ctx.arc(car.x + 10, car.y + car.height, 5, 0, Math.PI * 2);
+    ctx.arc(car.x + car.width - 10, car.y + car.height, 5, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Move car
     car.x += car.speed;
-    if (car.x > canvas.width) {
-      car.x = -car.width;
+    if (car.x > canvas.width + 20) {
+      car.x = -car.width - 20;
       car.y = canvas.height - 70 + Math.random() * 10;
     }
   }
@@ -167,35 +227,38 @@ function updateSnowflakes() {
       flake.y = -flake.radius;
       flake.x = Math.random() * canvas.width;
     }
-    if (flake.x > canvas.width) flake.x = 0;
-    if (flake.x < 0) flake.x = canvas.width;
+
+    if (flake.x > canvas.width) {
+      flake.x = 0;
+    } else if (flake.x < 0) {
+      flake.x = canvas.width;
+    }
   }
 }
 
-// === ANIMATION LOOP ===
-function animate() {
+// === MAIN DRAW LOOP ===
+function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  drawRoad();
   drawBuildings();
+  drawRoad();
   drawCars();
   drawSnowflakes();
-  requestAnimationFrame(animate);
+  requestAnimationFrame(draw);
 }
 
-// === RESIZE HANDLER ===
+generateBuildings();
+createCars(8);
+createSnowflakes(150);
+draw();
+
+// Handle window resize
 window.addEventListener('resize', () => {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
   generateBuildings();
-  createCars(5);
+  createCars(8);
   createSnowflakes(150);
 });
-
-// === INIT ===
-generateBuildings();
-createCars(5);
-createSnowflakes(150);
-animate();
 </script>
   <main>
     <section class="hero">
