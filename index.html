@@ -1,241 +1,264 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Allen Hack Club - Hackathon</title>
-<style>
-  body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-  }
-  main {
-    min-height: 600px;
-    padding: 20px;
-  }
-  #matrix {
-    display: block;
-    width: 100%;
-    height: 200px;
-    background: #111;
-  }
-  footer {
-    padding: 10px;
-    text-align: center;
-    background: #222;
-    color: white;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Allen Hack Club - Hackathon</title>
+  <link rel="stylesheet" href="styling.css" />
 </head>
 <body>
 
-  <main>
+  <header>
     <h1>AHC Hackathon 2025</h1>
     <p>Organized by the AHS Hack Club Dev Team • Date: TBD</p>
-    <p>Other content here...</p>
-  </main>
+  </header>
 
   <canvas id="matrix"></canvas>
+
+  <main>
+    <section class="hero">
+      <h2>Code. Create. Collaborate.</h2>
+      <p>Join students across Allen and beyond for a day of hacking, learning, and innovation. Beginners welcome!</p>
+    </section>
+    
+    <section class="cta">
+      <a href="#register" class="cta-btn">Reserve Your Spot</a>
+    </section>
+
+    <section id="about">
+      <h2>About the Hackathon</h2>
+      <p>The AHC Hackathon is a student-led tech event filled with workshops, snacks, prizes, and collaboration. Whether you're a beginner or advanced, you'll have an amazing time building cool projects with others!</p>
+    </section>
+
+    <section id="faq">
+      <h2>FAQs</h2>
+      <div class="faq">
+        <h3>Do I need experience?</h3>
+        <p>Nope! We'll have mentors and beginner-friendly workshops to help you out.</p>
+      </div>
+      <div class="faq">
+        <h3>What should I bring?</h3>
+        <p>Bring a laptop, charger, and enthusiasm. We'll provide food and Wi-Fi.</p>
+      </div>
+      <div class="faq">
+        <h3>Can I work in a team?</h3>
+        <p>Yes! Teams of up to 4 are allowed, or you can go solo. We’ll have team formation activities too.</p>
+      </div>
+    </section>
+
+    <section id="contact">
+      <h2>Contact Us</h2>
+      <p>Have questions? Reach out at <a href="mailto:allenhackclub@gmail.com">allenhackclub@gmail.com</a></p>
+    </section>
+  </main>
 
   <footer>
     &copy; 2025 Allen Hack Club | Built with ❤️ by the Dev Team.
   </footer>
 
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-  const canvas = document.getElementById('matrix');
-  const ctx = canvas.getContext('2d');
+  <script>
+    const canvas = document.getElementById('matrix');
+    const ctx = canvas.getContext('2d');
 
-  let width = window.innerWidth;
-  let height = 200;
-  canvas.width = width;
-  canvas.height = height;
+    let width = window.innerWidth;
+    let height = window.innerHeight;
+    canvas.width = width;
+    canvas.height = height;
 
-  const buildings = [];
-  const buildingWindows = [];
-  let snowflakes = [];
+    const roadHeight = 60;
+    const roadY = height - roadHeight;
 
-  function createBuildings() {
-    buildings.length = 0;
-    let xPos = 0;
-    while (xPos < width) {
-      const bWidth = 40 + Math.random() * 40;
-      const bHeight = 60 + Math.random() * 100;
-      const hasTower = Math.random() < 0.4;
-      const towerHeight = hasTower ? 20 + Math.random() * 60 : 0;
-      const roofType = Math.floor(Math.random() * 3); // 0=flat,1=triangle,2=slanted
-      const showBillboard = Math.random() < 0.4;
-      buildings.push({ x: xPos, width: bWidth, height: bHeight, towerHeight, roofType, showBillboard });
-      xPos += bWidth + 10;
-    }
-  }
+    let buildings = [];
+    let buildingWindows = [];
+    let snowflakes = [];
 
-  function calculateWindows(building, baseY) {
-    const windows = [];
-    const windowW = 6;
-    const windowH = 8;
-    const gapX = 6;
-    const gapY = 10;
-
-    for (let wx = building.x + 5; wx < building.x + building.width - windowW; wx += windowW + gapX) {
-      for (let wy = baseY - building.height + 8; wy < baseY - 10; wy += windowH + gapY) {
-        windows.push({ x: wx, y: wy });
+    function createBuildings() {
+      buildings = [];
+      let xPos = 0;
+      while (xPos < width) {
+        const bWidth = 30 + Math.random() * 30;
+        const bHeight = 100 + Math.random() * 120;
+        const roofType = Math.floor(Math.random() * 3); // 0=flat,1=triangle,2=slanted
+        const showBillboard = Math.random() < 0.5;
+        buildings.push({ x: xPos, width: bWidth, height: bHeight, roofType, showBillboard });
+        xPos += bWidth + 15;
       }
     }
 
-    if (building.towerHeight > 0) {
-      for (let wx = building.x + (building.width * 0.3); wx < building.x + (building.width * 0.7) - windowW; wx += windowW + gapX) {
-        for (let wy = baseY - building.height - building.towerHeight + 8; wy < baseY - building.height - 8; wy += windowH + gapY) {
+    function calculateWindows(building, baseY) {
+      const windows = [];
+      const windowW = 8;
+      const windowH = 10;
+      const gapX = 8;
+      const gapY = 12;
+
+      for (let wx = building.x + 6; wx < building.x + building.width - windowW; wx += windowW + gapX) {
+        for (let wy = baseY - building.height + 10; wy < baseY - 20; wy += windowH + gapY) {
           windows.push({ x: wx, y: wy });
+        }
+      }
+      return windows;
+    }
+
+    function drawBuildingRoof(building, baseY) {
+      const x = building.x;
+      const y = baseY - building.height;
+      const w = building.width;
+      const roofHeight = 20;
+
+      ctx.fillStyle = '#666666';
+      ctx.beginPath();
+
+      switch (building.roofType) {
+        case 0: // flat roof
+          ctx.fillRect(x, y - roofHeight/2, w, roofHeight/2);
+          break;
+
+        case 1: // triangle roof
+          ctx.moveTo(x, y);
+          ctx.lineTo(x + w / 2, y - roofHeight);
+          ctx.lineTo(x + w, y);
+          ctx.closePath();
+          ctx.fill();
+          break;
+
+        case 2: // slanted roof (right slope)
+          ctx.moveTo(x, y);
+          ctx.lineTo(x + w, y - roofHeight);
+          ctx.lineTo(x + w, y);
+          ctx.closePath();
+          ctx.fill();
+          break;
+      }
+    }
+
+    function drawBuildings() {
+      const baseY = height - roadHeight;
+
+      buildings.forEach((building, index) => {
+        let grad = ctx.createLinearGradient(building.x, baseY - building.height, building.x, baseY);
+        grad.addColorStop(0, '#bbbbbb');
+        grad.addColorStop(1, '#777777');
+        ctx.fillStyle = grad;
+        ctx.fillRect(building.x, baseY - building.height, building.width, building.height);
+
+        drawBuildingRoof(building, baseY);
+
+        if (!buildingWindows[index]) {
+          buildingWindows[index] = calculateWindows(building, baseY);
+        }
+        ctx.fillStyle = '#ffd700';
+        buildingWindows[index].forEach(win => {
+          ctx.fillRect(win.x, win.y, 8, 10);
+        });
+
+        if (building.showBillboard) {
+          const boardHeight = 25;
+          const boardWidth = building.width * 0.8;
+          const boardX = building.x + (building.width - boardWidth) / 2;
+          const boardY = baseY - building.height - boardHeight - 10;
+
+          ctx.fillStyle = '#222';
+          ctx.fillRect(boardX, boardY, boardWidth, boardHeight);
+
+          ctx.fillStyle = '#ffd700';
+          ctx.font = 'bold 14px Arial';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText('The Hack Club', boardX + boardWidth / 2, boardY + boardHeight / 2);
+        }
+      });
+    }
+
+    function createSnowflakes(count) {
+      snowflakes = [];
+      for (let i = 0; i < count; i++) {
+        snowflakes.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          radius: Math.random() * 3 + 1,
+          speed: Math.random() * 1 + 0.5,
+          drift: Math.random() * 1 - 0.5
+        });
+      }
+    }
+
+    function drawSnowflakes() {
+      ctx.clearRect(0, 0, width, height);
+
+      drawBuildings();
+
+      ctx.fillStyle = '#555555';
+      ctx.fillRect(0, roadY, width, roadHeight);
+
+      ctx.strokeStyle = '#ddd';
+      ctx.lineWidth = 3;
+      ctx.setLineDash([20, 30]);
+      ctx.beginPath();
+      ctx.moveTo(0, roadY + roadHeight / 2);
+      ctx.lineTo(width, roadY + roadHeight / 2);
+      ctx.stroke();
+
+      ctx.fillStyle = "white";
+      ctx.beginPath();
+      for (const flake of snowflakes) {
+        ctx.moveTo(flake.x, flake.y);
+        ctx.arc(flake.x, flake.y, flake.radius, 0, Math.PI * 2);
+      }
+      ctx.fill();
+
+      updateSnowflakes();
+    }
+
+    function updateSnowflakes() {
+      for (const flake of snowflakes) {
+        flake.y += flake.speed;
+        flake.x += flake.drift;
+
+        if (flake.y > height) {
+          flake.y = -flake.radius;
+          flake.x = Math.random() * width;
+        }
+
+        if (flake.x > width) {
+          flake.x = 0;
+        } else if (flake.x < 0) {
+          flake.x = width;
         }
       }
     }
 
-    return windows;
-  }
+    function getSnowflakeCount() {
+      return width < 600 ? 70 : 150;
+    }
 
-  function drawBuildings() {
-    const baseY = height;
+    function animate() {
+      drawSnowflakes();
+      requestAnimationFrame(animate);
+    }
 
-    buildings.forEach((building, index) => {
-      const grad = ctx.createLinearGradient(building.x, baseY - building.height, building.x, baseY);
-      grad.addColorStop(0, '#aaa');
-      grad.addColorStop(1, '#444');
-      ctx.fillStyle = grad;
-      ctx.fillRect(building.x, baseY - building.height, building.width, building.height);
+    function setup() {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width;
+      canvas.height = height;
 
-      // Roof shapes
-      switch (building.roofType) {
-        case 1: // Triangle
-          ctx.fillStyle = '#333';
-          ctx.beginPath();
-          ctx.moveTo(building.x, baseY - building.height);
-          ctx.lineTo(building.x + building.width / 2, baseY - building.height - 15);
-          ctx.lineTo(building.x + building.width, baseY - building.height);
-          ctx.closePath();
-          ctx.fill();
-          break;
-        case 2: // Slanted
-          ctx.fillStyle = '#333';
-          ctx.beginPath();
-          ctx.moveTo(building.x, baseY - building.height);
-          ctx.lineTo(building.x + building.width, baseY - building.height - 10);
-          ctx.lineTo(building.x + building.width, baseY - building.height);
-          ctx.closePath();
-          ctx.fill();
-          break;
-      }
+      buildingWindows = [];
 
-      // Tower
-      if (building.towerHeight > 0) {
-        const towerWidth = building.width * 0.3;
-        const towerX = building.x + (building.width - towerWidth) / 2;
-        ctx.fillStyle = '#777';
-        ctx.fillRect(towerX, baseY - building.height - building.towerHeight, towerWidth, building.towerHeight);
-      }
+      createBuildings();
+      createSnowflakes(getSnowflakeCount());
+    }
 
-      // Billboard
-      if (building.showBillboard) {
-        ctx.fillStyle = '#222';
-        const boardW = building.width;
-        const boardH = 20;
-        const boardX = building.x;
-        const boardY = baseY - building.height - 25;
+    setup();
+    animate();
 
-        ctx.fillRect(boardX, boardY, boardW, boardH);
-
-        ctx.fillStyle = 'white';
-        ctx.font = '10px Arial';
-        ctx.textAlign = 'center';
-        ctx.fillText("The Hack Club", boardX + boardW / 2, boardY + 14);
-      }
-
-      if (!buildingWindows[index]) {
-        buildingWindows[index] = calculateWindows(building, baseY);
-      }
-
-      ctx.fillStyle = '#ffd700';
-      buildingWindows[index].forEach(win => {
-        ctx.fillRect(win.x, win.y, 6, 8);
-      });
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        setup();
+      }, 200);
     });
-  }
-
-  function createSnowflakes(count) {
-    snowflakes = [];
-    for (let i = 0; i < count; i++) {
-      snowflakes.push({
-        x: Math.random() * width,
-        y: Math.random() * height,
-        radius: Math.random() * 2 + 1,
-        speed: Math.random() * 0.8 + 0.5,
-        drift: Math.random() * 1 - 0.5
-      });
-    }
-  }
-
-  function drawSnowflakes() {
-    ctx.clearRect(0, 0, width, height);
-    drawBuildings();
-
-    ctx.fillStyle = "white";
-    ctx.beginPath();
-    for (const flake of snowflakes) {
-      ctx.moveTo(flake.x, flake.y);
-      ctx.arc(flake.x, flake.y, flake.radius, 0, Math.PI * 2);
-    }
-    ctx.fill();
-
-    updateSnowflakes();
-  }
-
-  function updateSnowflakes() {
-    for (const flake of snowflakes) {
-      flake.y += flake.speed;
-      flake.x += flake.drift;
-
-      if (flake.y > height) {
-        flake.y = -flake.radius;
-        flake.x = Math.random() * width;
-      }
-
-      if (flake.x > width) {
-        flake.x = 0;
-      } else if (flake.x < 0) {
-        flake.x = width;
-      }
-    }
-  }
-
-  function getSnowflakeCount() {
-    return width < 600 ? 50 : 100;
-  }
-
-  function animate() {
-    drawSnowflakes();
-    requestAnimationFrame(animate);
-  }
-
-  function setup() {
-    width = window.innerWidth;
-    height = 200;
-    canvas.width = width;
-    canvas.height = height;
-
-    buildingWindows.length = 0;
-    createBuildings();
-    createSnowflakes(getSnowflakeCount());
-  }
-
-  setup();
-  animate();
-
-  window.addEventListener('resize', () => {
-    clearTimeout(window.resizing);
-    window.resizing = setTimeout(setup, 200);
-  });
-});
-</script>
-
+  </script>
 </body>
 </html>
