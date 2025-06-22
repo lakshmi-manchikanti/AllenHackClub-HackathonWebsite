@@ -17,7 +17,7 @@ const canvas = document.getElementById('matrix');
 const ctx = canvas.getContext('2d');
 
 let width = window.innerWidth;
-let height = window.innerHeight;
+let height = 200; // Fixed height at bottom
 canvas.width = width;
 canvas.height = height;
 
@@ -26,40 +26,39 @@ const roadY = height - roadHeight;
 
 let buildings = [];
 let buildingWindows = [];
-let cars = [];
 let snowflakes = [];
 
 function createBuildings() {
   buildings = [];
   let xPos = 0;
   while (xPos < width) {
-    const bWidth = 30 + Math.random() * 20;
-    const bHeight = 100 + Math.random() * 100;
-    const hasTower = Math.random() < 0.3;
-    const towerHeight = hasTower ? 30 + Math.random() * 40 : 0;
-    buildings.push({ x: xPos, width: bWidth, height: bHeight, towerHeight });
-    xPos += bWidth + 15;
+    const bWidth = 40 + Math.random() * 40;
+    const bHeight = 60 + Math.random() * 100;
+    const hasTower = Math.random() < 0.4;
+    const towerHeight = hasTower ? 20 + Math.random() * 60 : 0;
+    const roofType = Math.floor(Math.random() * 3); // 0 = flat, 1 = triangle, 2 = slanted
+    const showBillboard = Math.random() < 0.4;
+    buildings.push({ x: xPos, width: bWidth, height: bHeight, towerHeight, roofType, showBillboard });
+    xPos += bWidth + 10;
   }
 }
 
 function calculateWindows(building, baseY) {
   const windows = [];
-  const windowW = 8;
-  const windowH = 10;
-  const gapX = 8;
-  const gapY = 12;
+  const windowW = 6;
+  const windowH = 8;
+  const gapX = 6;
+  const gapY = 10;
 
-  // Main building windows
-  for (let wx = building.x + 6; wx < building.x + building.width - windowW; wx += windowW + gapX) {
-    for (let wy = baseY - building.height + 10; wy < baseY - 20; wy += windowH + gapY) {
+  for (let wx = building.x + 5; wx < building.x + building.width - windowW; wx += windowW + gapX) {
+    for (let wy = baseY - building.height + 8; wy < baseY - 10; wy += windowH + gapY) {
       windows.push({ x: wx, y: wy });
     }
   }
 
-  // Tower windows
   if (building.towerHeight > 0) {
-    for (let wx = building.x + (building.width * 0.35); wx < building.x + (building.width * 0.65) - windowW; wx += windowW + gapX) {
-      for (let wy = baseY - building.height - building.towerHeight + 10; wy < baseY - building.height - 10; wy += windowH + gapY) {
+    for (let wx = building.x + (building.width * 0.3); wx < building.x + (building.width * 0.7) - windowW; wx += windowW + gapX) {
+      for (let wy = baseY - building.height - building.towerHeight + 8; wy < baseY - building.height - 8; wy += windowH + gapY) {
         windows.push({ x: wx, y: wy });
       }
     }
@@ -69,92 +68,69 @@ function calculateWindows(building, baseY) {
 }
 
 function drawBuildings() {
-  const baseY = height - roadHeight;
+  const baseY = height;
 
   buildings.forEach((building, index) => {
     let grad = ctx.createLinearGradient(building.x, baseY - building.height, building.x, baseY);
-    grad.addColorStop(0, '#bbbbbb');
-    grad.addColorStop(1, '#777777');
+    grad.addColorStop(0, '#aaaaaa');
+    grad.addColorStop(1, '#555555');
     ctx.fillStyle = grad;
     ctx.fillRect(building.x, baseY - building.height, building.width, building.height);
 
+    // Roof shapes
+    switch (building.roofType) {
+      case 1: // Triangle
+        ctx.fillStyle = '#333';
+        ctx.beginPath();
+        ctx.moveTo(building.x, baseY - building.height);
+        ctx.lineTo(building.x + building.width / 2, baseY - building.height - 15);
+        ctx.lineTo(building.x + building.width, baseY - building.height);
+        ctx.closePath();
+        ctx.fill();
+        break;
+      case 2: // Slanted
+        ctx.fillStyle = '#333';
+        ctx.beginPath();
+        ctx.moveTo(building.x, baseY - building.height);
+        ctx.lineTo(building.x + building.width, baseY - building.height - 10);
+        ctx.lineTo(building.x + building.width, baseY - building.height);
+        ctx.closePath();
+        ctx.fill();
+        break;
+    }
+
+    // Tower
     if (building.towerHeight > 0) {
       const towerWidth = building.width * 0.3;
       const towerX = building.x + (building.width - towerWidth) / 2;
-
-      let towerGrad = ctx.createLinearGradient(towerX, baseY - building.height - building.towerHeight, towerX, baseY - building.height);
-      towerGrad.addColorStop(0, '#cccccc');
-      towerGrad.addColorStop(1, '#888888');
-      ctx.fillStyle = towerGrad;
+      ctx.fillStyle = '#777';
       ctx.fillRect(towerX, baseY - building.height - building.towerHeight, towerWidth, building.towerHeight);
+    }
 
-      ctx.fillStyle = '#555555';
-      ctx.beginPath();
-      ctx.moveTo(towerX, baseY - building.height - building.towerHeight);
-      ctx.lineTo(towerX + towerWidth / 2, baseY - building.height - building.towerHeight - 15);
-      ctx.lineTo(towerX + towerWidth, baseY - building.height - building.towerHeight);
-      ctx.closePath();
-      ctx.fill();
+    // Billboards
+    if (building.showBillboard) {
+      ctx.fillStyle = '#222';
+      const boardW = building.width;
+      const boardH = 20;
+      const boardX = building.x;
+      const boardY = baseY - building.height - 25;
+
+      ctx.fillRect(boardX, boardY, boardW, boardH);
+
+      ctx.fillStyle = 'white';
+      ctx.font = '10px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText("The Hack Club", boardX + boardW / 2, boardY + 14);
     }
 
     if (!buildingWindows[index]) {
       buildingWindows[index] = calculateWindows(building, baseY);
     }
+
     ctx.fillStyle = '#ffd700';
     buildingWindows[index].forEach(win => {
-      ctx.fillRect(win.x, win.y, 8, 10);
+      ctx.fillRect(win.x, win.y, 6, 8);
     });
-  });
-}
-
-function createCars(count) {
-  cars = [];
-  for (let i = 0; i < count; i++) {
-    cars.push({
-      x: Math.random() * width,
-      y: roadY + roadHeight / 2 - 15,
-      width: 50,
-      height: 20,
-      speed: 1 + Math.random() * 2,
-      color: 'gray'
-    });
-  }
-}
-
-function drawCar(car) {
-  ctx.fillStyle = car.color;
-
-  ctx.fillRect(car.x, car.y, car.width, car.height);
-
-  ctx.beginPath();
-  ctx.moveTo(car.x + car.width, car.y);
-  ctx.lineTo(car.x + car.width + 10, car.y + 5);
-  ctx.lineTo(car.x + car.width + 10, car.y + car.height - 5);
-  ctx.lineTo(car.x + car.width, car.y + car.height);
-  ctx.closePath();
-  ctx.fill();
-
-  ctx.fillStyle = 'rgba(200, 200, 200, 0.7)';
-  ctx.beginPath();
-  ctx.moveTo(car.x + 10, car.y);
-  ctx.lineTo(car.x + 25, car.y);
-  ctx.lineTo(car.x + 20, car.y + car.height);
-  ctx.lineTo(car.x + 5, car.y + car.height);
-  ctx.closePath();
-  ctx.fill();
-
-  ctx.fillStyle = '#222';
-  ctx.beginPath();
-  ctx.ellipse(car.x + 12, car.y + car.height, 8, 5, 0, 0, Math.PI * 2);
-  ctx.ellipse(car.x + car.width - 12, car.y + car.height, 8, 5, 0, 0, Math.PI * 2);
-  ctx.fill();
-}
-
-function drawCars() {
-  cars.forEach(car => {
-    drawCar(car);
-    car.x += car.speed;
-    if (car.x > width + 20) car.x = -car.width - 20;
   });
 }
 
@@ -164,8 +140,8 @@ function createSnowflakes(count) {
     snowflakes.push({
       x: Math.random() * width,
       y: Math.random() * height,
-      radius: Math.random() * 3 + 1,
-      speed: Math.random() * 1 + 0.5,
+      radius: Math.random() * 2 + 1,
+      speed: Math.random() * 0.8 + 0.5,
       drift: Math.random() * 1 - 0.5
     });
   }
@@ -175,19 +151,6 @@ function drawSnowflakes() {
   ctx.clearRect(0, 0, width, height);
 
   drawBuildings();
-
-  ctx.fillStyle = '#555555';
-  ctx.fillRect(0, roadY, width, roadHeight);
-
-  ctx.strokeStyle = '#ddd';
-  ctx.lineWidth = 3;
-  ctx.setLineDash([20, 30]);
-  ctx.beginPath();
-  ctx.moveTo(0, roadY + roadHeight / 2);
-  ctx.lineTo(width, roadY + roadHeight / 2);
-  ctx.stroke();
-
-  drawCars();
 
   ctx.fillStyle = "white";
   ctx.beginPath();
@@ -218,13 +181,8 @@ function updateSnowflakes() {
   }
 }
 
-// Adjust count based on screen width (less on mobile)
 function getSnowflakeCount() {
-  return width < 600 ? 70 : 150;
-}
-
-function getCarCount() {
-  return width < 600 ? 4 : 8;
+  return width < 600 ? 50 : 100;
 }
 
 function animate() {
@@ -232,17 +190,15 @@ function animate() {
   requestAnimationFrame(animate);
 }
 
-// Initial setup
 function setup() {
   width = window.innerWidth;
-  height = window.innerHeight;
+  height = 200;
   canvas.width = width;
   canvas.height = height;
 
   buildingWindows = [];
 
   createBuildings();
-  createCars(getCarCount());
   createSnowflakes(getSnowflakeCount());
 }
 
