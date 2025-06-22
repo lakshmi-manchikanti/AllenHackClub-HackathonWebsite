@@ -7,7 +7,6 @@
   <link rel="stylesheet" href="styling.css" />
 </head>
 <body>
-
   <header>
     <h1>AHC Hackathon 2025</h1>
     <p>Organized by the AHS Hack Club Dev Team • Date: TBD</p>
@@ -60,17 +59,23 @@
     const canvas = document.getElementById('matrix');
     const ctx = canvas.getContext('2d');
 
-    let width = window.innerWidth;
-    let height = window.innerHeight;
-    canvas.width = width;
-    canvas.height = height;
-
-    const roadHeight = 60;
-    const roadY = height - roadHeight;
-
+    let width, height;
     let buildings = [];
     let buildingWindows = [];
     let snowflakes = [];
+
+    function resize() {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width;
+      canvas.height = height;
+    }
+    resize();
+    window.addEventListener('resize', () => {
+      resize();
+      createBuildings();
+      createSnowflakes(150);
+    });
 
     function createBuildings() {
       buildings = [];
@@ -83,6 +88,7 @@
         buildings.push({ x: xPos, width: bWidth, height: bHeight, roofType, showBillboard });
         xPos += bWidth + 15;
       }
+      buildingWindows = [];
     }
 
     function calculateWindows(building, baseY) {
@@ -111,7 +117,7 @@
 
       switch (building.roofType) {
         case 0: // flat roof
-          ctx.fillRect(x, y - roofHeight/2, w, roofHeight/2);
+          ctx.fillRect(x, y - roofHeight / 2, w, roofHeight / 2);
           break;
 
         case 1: // triangle roof
@@ -133,7 +139,7 @@
     }
 
     function drawBuildings() {
-      const baseY = height - roadHeight;
+      const baseY = height;  // buildings sit at bottom
 
       buildings.forEach((building, index) => {
         let grad = ctx.createLinearGradient(building.x, baseY - building.height, building.x, baseY);
@@ -188,77 +194,32 @@
 
       drawBuildings();
 
-      ctx.fillStyle = '#555555';
-      ctx.fillRect(0, roadY, width, roadHeight);
-
-      ctx.strokeStyle = '#ddd';
-      ctx.lineWidth = 3;
-      ctx.setLineDash([20, 30]);
-      ctx.beginPath();
-      ctx.moveTo(0, roadY + roadHeight / 2);
-      ctx.lineTo(width, roadY + roadHeight / 2);
-      ctx.stroke();
-
       ctx.fillStyle = "white";
-      ctx.beginPath();
-      for (const flake of snowflakes) {
-        ctx.moveTo(flake.x, flake.y);
-        ctx.arc(flake.x, flake.y, flake.radius, 0, Math.PI * 2);
-      }
-      ctx.fill();
+      snowflakes.forEach(snowflake => {
+        ctx.beginPath();
+        ctx.arc(snowflake.x, snowflake.y, snowflake.radius, 0, Math.PI * 2);
+        ctx.fill();
 
-      updateSnowflakes();
-    }
+        snowflake.y += snowflake.speed;
+        snowflake.x += snowflake.drift;
 
-    function updateSnowflakes() {
-      for (const flake of snowflakes) {
-        flake.y += flake.speed;
-        flake.x += flake.drift;
-
-        if (flake.y > height) {
-          flake.y = -flake.radius;
-          flake.x = Math.random() * width;
+        if (snowflake.y > height) {
+          snowflake.y = -snowflake.radius;
+          snowflake.x = Math.random() * width;
         }
-
-        if (flake.x > width) {
-          flake.x = 0;
-        } else if (flake.x < 0) {
-          flake.x = width;
-        }
-      }
+        if (snowflake.x > width) snowflake.x = 0;
+        if (snowflake.x < 0) snowflake.x = width;
+      });
     }
 
-    function getSnowflakeCount() {
-      return width < 600 ? 70 : 150;
-    }
-
-    function animate() {
+    function loop() {
       drawSnowflakes();
-      requestAnimationFrame(animate);
+      requestAnimationFrame(loop);
     }
 
-    function setup() {
-      width = window.innerWidth;
-      height = window.innerHeight;
-      canvas.width = width;
-      canvas.height = height;
-
-      buildingWindows = [];
-
-      createBuildings();
-      createSnowflakes(getSnowflakeCount());
-    }
-
-    setup();
-    animate();
-
-    let resizeTimeout;
-    window.addEventListener('resize', () => {
-      clearTimeout(resizeTimeout);
-      resizeTimeout = setTimeout(() => {
-        setup();
-      }, 200);
-    });
+    createBuildings();
+    createSnowflakes(150);
+    loop();
   </script>
 </body>
 </html>
