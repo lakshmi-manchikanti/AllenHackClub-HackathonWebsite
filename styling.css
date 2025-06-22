@@ -71,13 +71,7 @@ section {
   background: #0ea5e9;
 }
 
-#about,
-#faq,
-#contact {
-  background: rgba(0, 0, 0, 0.06);
-  backdrop-filter: blur(10px);
-  border-radius: 1rem;
-}
+
 
 h2 {
   font-size: 1.8rem;
@@ -123,9 +117,6 @@ h2 {
 
 footer {
   text-align: center;
-  padding: 2rem 1rem;
-  background-color: #1e293b;
-  color: #0073ff;
   font-size: 0.9rem;
 }
 
