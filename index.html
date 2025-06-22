@@ -12,204 +12,198 @@
     <p>Organized by the AHS Hack Club Dev Team • Date: TBD</p>
   </header>
   <script>
-const canvas = document.getElementById('matrix');
-const ctx = canvas.getContext('2d')
+document.addEventListener("DOMContentLoaded", () => {
+  const canvas = document.getElementById('matrix');
+  const ctx = canvas.getContext('2d');
 
-let width = window.innerWidth;
-let height = 200; // Fixed height at bottom
-canvas.width = width;
-canvas.height = height;
+  let width = window.innerWidth;
+  let height = 200;
+  canvas.width = width;
+  canvas.height = height;
 
-const roadHeight = 60;
-const roadY = height - roadHeight;
+  const buildings = [];
+  const buildingWindows = [];
+  let snowflakes = [];
 
-let buildings = [];
-let buildingWindows = [];
-let snowflakes = [];
-
-function createBuildings() {
-  buildings = [];
-  let xPos = 0;
-  while (xPos < width) {
-    const bWidth = 40 + Math.random() * 40;
-    const bHeight = 60 + Math.random() * 100;
-    const hasTower = Math.random() < 0.4;
-    const towerHeight = hasTower ? 20 + Math.random() * 60 : 0;
-    const roofType = Math.floor(Math.random() * 3); // 0 = flat, 1 = triangle, 2 = slanted
-    const showBillboard = Math.random() < 0.4;
-    buildings.push({ x: xPos, width: bWidth, height: bHeight, towerHeight, roofType, showBillboard });
-    xPos += bWidth + 10;
-  }
-}
-
-function calculateWindows(building, baseY) {
-  const windows = [];
-  const windowW = 6;
-  const windowH = 8;
-  const gapX = 6;
-  const gapY = 10;
-
-  for (let wx = building.x + 5; wx < building.x + building.width - windowW; wx += windowW + gapX) {
-    for (let wy = baseY - building.height + 8; wy < baseY - 10; wy += windowH + gapY) {
-      windows.push({ x: wx, y: wy });
+  function createBuildings() {
+    buildings.length = 0;
+    let xPos = 0;
+    while (xPos < width) {
+      const bWidth = 40 + Math.random() * 40;
+      const bHeight = 60 + Math.random() * 100;
+      const hasTower = Math.random() < 0.4;
+      const towerHeight = hasTower ? 20 + Math.random() * 60 : 0;
+      const roofType = Math.floor(Math.random() * 3); // 0 = flat, 1 = triangle, 2 = slanted
+      const showBillboard = Math.random() < 0.4;
+      buildings.push({ x: xPos, width: bWidth, height: bHeight, towerHeight, roofType, showBillboard });
+      xPos += bWidth + 10;
     }
   }
 
-  if (building.towerHeight > 0) {
-    for (let wx = building.x + (building.width * 0.3); wx < building.x + (building.width * 0.7) - windowW; wx += windowW + gapX) {
-      for (let wy = baseY - building.height - building.towerHeight + 8; wy < baseY - building.height - 8; wy += windowH + gapY) {
+  function calculateWindows(building, baseY) {
+    const windows = [];
+    const windowW = 6;
+    const windowH = 8;
+    const gapX = 6;
+    const gapY = 10;
+
+    for (let wx = building.x + 5; wx < building.x + building.width - windowW; wx += windowW + gapX) {
+      for (let wy = baseY - building.height + 8; wy < baseY - 10; wy += windowH + gapY) {
         windows.push({ x: wx, y: wy });
+      }
+    }
+
+    if (building.towerHeight > 0) {
+      for (let wx = building.x + (building.width * 0.3); wx < building.x + (building.width * 0.7) - windowW; wx += windowW + gapX) {
+        for (let wy = baseY - building.height - building.towerHeight + 8; wy < baseY - building.height - 8; wy += windowH + gapY) {
+          windows.push({ x: wx, y: wy });
+        }
+      }
+    }
+
+    return windows;
+  }
+
+  function drawBuildings() {
+    const baseY = height;
+
+    buildings.forEach((building, index) => {
+      const grad = ctx.createLinearGradient(building.x, baseY - building.height, building.x, baseY);
+      grad.addColorStop(0, '#aaa');
+      grad.addColorStop(1, '#444');
+      ctx.fillStyle = grad;
+      ctx.fillRect(building.x, baseY - building.height, building.width, building.height);
+
+      // Roof shapes
+      switch (building.roofType) {
+        case 1: // Triangle
+          ctx.fillStyle = '#333';
+          ctx.beginPath();
+          ctx.moveTo(building.x, baseY - building.height);
+          ctx.lineTo(building.x + building.width / 2, baseY - building.height - 15);
+          ctx.lineTo(building.x + building.width, baseY - building.height);
+          ctx.closePath();
+          ctx.fill();
+          break;
+        case 2: // Slanted
+          ctx.fillStyle = '#333';
+          ctx.beginPath();
+          ctx.moveTo(building.x, baseY - building.height);
+          ctx.lineTo(building.x + building.width, baseY - building.height - 10);
+          ctx.lineTo(building.x + building.width, baseY - building.height);
+          ctx.closePath();
+          ctx.fill();
+          break;
+      }
+
+      // Tower
+      if (building.towerHeight > 0) {
+        const towerWidth = building.width * 0.3;
+        const towerX = building.x + (building.width - towerWidth) / 2;
+        ctx.fillStyle = '#777';
+        ctx.fillRect(towerX, baseY - building.height - building.towerHeight, towerWidth, building.towerHeight);
+      }
+
+      // Billboard
+      if (building.showBillboard) {
+        ctx.fillStyle = '#222';
+        const boardW = building.width;
+        const boardH = 20;
+        const boardX = building.x;
+        const boardY = baseY - building.height - 25;
+
+        ctx.fillRect(boardX, boardY, boardW, boardH);
+
+        ctx.fillStyle = 'white';
+        ctx.font = '10px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText("The Hack Club", boardX + boardW / 2, boardY + 14);
+      }
+
+      if (!buildingWindows[index]) {
+        buildingWindows[index] = calculateWindows(building, baseY);
+      }
+
+      ctx.fillStyle = '#ffd700';
+      buildingWindows[index].forEach(win => {
+        ctx.fillRect(win.x, win.y, 6, 8);
+      });
+    });
+  }
+
+  function createSnowflakes(count) {
+    snowflakes = [];
+    for (let i = 0; i < count; i++) {
+      snowflakes.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        radius: Math.random() * 2 + 1,
+        speed: Math.random() * 0.8 + 0.5,
+        drift: Math.random() * 1 - 0.5
+      });
+    }
+  }
+
+  function drawSnowflakes() {
+    ctx.clearRect(0, 0, width, height);
+    drawBuildings();
+
+    ctx.fillStyle = "white";
+    ctx.beginPath();
+    for (const flake of snowflakes) {
+      ctx.moveTo(flake.x, flake.y);
+      ctx.arc(flake.x, flake.y, flake.radius, 0, Math.PI * 2);
+    }
+    ctx.fill();
+
+    updateSnowflakes();
+  }
+
+  function updateSnowflakes() {
+    for (const flake of snowflakes) {
+      flake.y += flake.speed;
+      flake.x += flake.drift;
+
+      if (flake.y > height) {
+        flake.y = -flake.radius;
+        flake.x = Math.random() * width;
+      }
+
+      if (flake.x > width) {
+        flake.x = 0;
+      } else if (flake.x < 0) {
+        flake.x = width;
       }
     }
   }
 
-  return windows;
-}
+  function getSnowflakeCount() {
+    return width < 600 ? 50 : 100;
+  }
 
-function drawBuildings() {
-  const baseY = height;
+  function animate() {
+    drawSnowflakes();
+    requestAnimationFrame(animate);
+  }
 
-  buildings.forEach((building, index) => {
-    let grad = ctx.createLinearGradient(building.x, baseY - building.height, building.x, baseY);
-    grad.addColorStop(0, '#aaaaaa');
-    grad.addColorStop(1, '#555555');
-    ctx.fillStyle = grad;
-    ctx.fillRect(building.x, baseY - building.height, building.width, building.height);
+  function setup() {
+    width = window.innerWidth;
+    height = 200;
+    canvas.width = width;
+    canvas.height = height;
 
-    // Roof shapes
-    switch (building.roofType) {
-      case 1: // Triangle
-        ctx.fillStyle = '#333';
-        ctx.beginPath();
-        ctx.moveTo(building.x, baseY - building.height);
-        ctx.lineTo(building.x + building.width / 2, baseY - building.height - 15);
-        ctx.lineTo(building.x + building.width, baseY - building.height);
-        ctx.closePath();
-        ctx.fill();
-        break;
-      case 2: // Slanted
-        ctx.fillStyle = '#333';
-        ctx.beginPath();
-        ctx.moveTo(building.x, baseY - building.height);
-        ctx.lineTo(building.x + building.width, baseY - building.height - 10);
-        ctx.lineTo(building.x + building.width, baseY - building.height);
-        ctx.closePath();
-        ctx.fill();
-        break;
-    }
+    buildingWindows.length = 0;
+    createBuildings();
+    createSnowflakes(getSnowflakeCount());
+  }
 
-    // Tower
-    if (building.towerHeight > 0) {
-      const towerWidth = building.width * 0.3;
-      const towerX = building.x + (building.width - towerWidth) / 2;
-      ctx.fillStyle = '#777';
-      ctx.fillRect(towerX, baseY - building.height - building.towerHeight, towerWidth, building.towerHeight);
-    }
+  setup();
+  animate();
 
-    // Billboards
-    if (building.showBillboard) {
-      ctx.fillStyle = '#222';
-      const boardW = building.width;
-      const boardH = 20;
-      const boardX = building.x;
-      const boardY = baseY - building.height - 25;
-
-      ctx.fillRect(boardX, boardY, boardW, boardH);
-
-      ctx.fillStyle = 'white';
-      ctx.font = '10px Arial';
-      ctx.textAlign = 'center';
-      ctx.fillText("The Hack Club", boardX + boardW / 2, boardY + 14);
-    }
-
-    if (!buildingWindows[index]) {
-      buildingWindows[index] = calculateWindows(building, baseY);
-    }
-
-    ctx.fillStyle = '#ffd700';
-    buildingWindows[index].forEach(win => {
-      ctx.fillRect(win.x, win.y, 6, 8);
-    });
+  window.addEventListener('resize', () => {
+    clearTimeout(window.resizing);
+    window.resizing = setTimeout(setup, 200);
   });
-}
-
-function createSnowflakes(count) {
-  snowflakes = [];
-  for (let i = 0; i < count; i++) {
-    snowflakes.push({
-      x: Math.random() * width,
-      y: Math.random() * height,
-      radius: Math.random() * 2 + 1,
-      speed: Math.random() * 0.8 + 0.5,
-      drift: Math.random() * 1 - 0.5
-    });
-  }
-}
-
-function drawSnowflakes() {
-  ctx.clearRect(0, 0, width, height);
-
-  drawBuildings();
-
-  ctx.fillStyle = "white";
-  ctx.beginPath();
-  for (const flake of snowflakes) {
-    ctx.moveTo(flake.x, flake.y);
-    ctx.arc(flake.x, flake.y, flake.radius, 0, Math.PI * 2);
-  }
-  ctx.fill();
-
-  updateSnowflakes();
-}
-
-function updateSnowflakes() {
-  for (const flake of snowflakes) {
-    flake.y += flake.speed;
-    flake.x += flake.drift;
-
-    if (flake.y > height) {
-      flake.y = -flake.radius;
-      flake.x = Math.random() * width;
-    }
-
-    if (flake.x > width) {
-      flake.x = 0;
-    } else if (flake.x < 0) {
-      flake.x = width;
-    }
-  }
-}
-
-function getSnowflakeCount() {
-  return width < 600 ? 50 : 100;
-}
-
-function animate() {
-  drawSnowflakes();
-  requestAnimationFrame(animate);
-}
-
-function setup() {
-  width = window.innerWidth;
-  height = 200;
-  canvas.width = width;
-  canvas.height = height;
-
-  buildingWindows = [];
-
-  createBuildings();
-  createSnowflakes(getSnowflakeCount());
-}
-
-setup();
-animate();
-
-let resizeTimeout;
-window.addEventListener('resize', () => {
-  clearTimeout(resizeTimeout);
-  resizeTimeout = setTimeout(() => {
-    setup();
-  }, 200);
 });
 </script>
   <main>
