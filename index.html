@@ -6,6 +6,11 @@
   <title>Allen Hack Club - Hackathon</title>
   <link rel="stylesheet" href="styling.css" />
   <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
     #matrix {
       position: fixed;
       top: 0;
@@ -13,11 +18,11 @@
       width: 100vw;
       height: 100vh;
       z-index: -1;
-      display: block;
     }
   </style>
 </head>
 <body>
+
   <header>
     <h1>AHC Hackathon 2025</h1>
     <p>Organized by the AHS Hack Club Dev Team • Date: TBD</p>
@@ -88,14 +93,18 @@
     function createBuildings() {
       buildings = [];
       let xPos = 0;
+      const billboardProbability = 0.2;
+
       while (xPos < width) {
         const bWidth = 30 + Math.random() * 30;
         const bHeight = 100 + Math.random() * 120;
         const roofType = Math.floor(Math.random() * 3);
-        const showBillboard = Math.random() < 0.6;
+        const showBillboard = Math.random() < billboardProbability;
+
         buildings.push({ x: xPos, width: bWidth, height: bHeight, roofType, showBillboard });
         xPos += bWidth + 15;
       }
+
       buildingWindows = [];
     }
 
@@ -122,10 +131,10 @@
       ctx.fillStyle = '#555555';
 
       switch (building.roofType) {
-        case 0: // flat
+        case 0:
           ctx.fillRect(x, y - 10, w, 10);
           break;
-        case 1: // triangle
+        case 1:
           ctx.beginPath();
           ctx.moveTo(x, y);
           ctx.lineTo(x + w / 2, y - 30);
@@ -133,7 +142,7 @@
           ctx.closePath();
           ctx.fill();
           break;
-        case 2: // slant
+        case 2:
           ctx.beginPath();
           ctx.moveTo(x, y);
           ctx.lineTo(x + w, y - 25);
@@ -165,7 +174,6 @@
           ctx.fillRect(win.x, win.y, 8, 10);
         });
 
-        // Billboard
         if (building.showBillboard) {
           const boardHeight = 24;
           const boardWidth = building.width * 0.85;
