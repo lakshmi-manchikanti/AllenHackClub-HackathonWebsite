@@ -27,53 +27,73 @@ const roadY = canvas.height - roadHeight;
 function createBuildings(count) {
   let xPos = 0;
   for (let i = 0; i < count; i++) {
-    const width = 40 + Math.random() * 30;
-    const height = 60 + Math.random() * 60;
+    const width = 30 + Math.random() * 20;  // smaller widths
+    const height = 50 + Math.random() * 50; // smaller heights
     const hasTower = Math.random() < 0.3;
-    const towerHeight = hasTower ? 30 + Math.random() * 40 : 0;
+    const towerHeight = hasTower ? 20 + Math.random() * 30 : 0;
     buildings.push({ x: xPos, width, height, towerHeight });
     xPos += width + 15;
   }
 }
 
 function drawBuildings() {
-  ctx.fillStyle = '#999999'; // light gray for buildings
   const baseY = canvas.height - roadHeight;
-
   buildings.forEach(building => {
-    // Main building
+    // Main building body with gradient shading
+    let grad = ctx.createLinearGradient(building.x, baseY - building.height, building.x, baseY);
+    grad.addColorStop(0, '#bbbbbb');
+    grad.addColorStop(1, '#777777');
+    ctx.fillStyle = grad;
     ctx.fillRect(building.x, baseY - building.height, building.width, building.height);
 
-    // Tower if exists
+    // Tower with small roof triangle
     if (building.towerHeight > 0) {
       const towerWidth = building.width * 0.3;
       const towerX = building.x + (building.width - towerWidth) / 2;
+
+      // Tower body gradient
+      let towerGrad = ctx.createLinearGradient(towerX, baseY - building.height - building.towerHeight, towerX, baseY - building.height);
+      towerGrad.addColorStop(0, '#cccccc');
+      towerGrad.addColorStop(1, '#888888');
+      ctx.fillStyle = towerGrad;
       ctx.fillRect(towerX, baseY - building.height - building.towerHeight, towerWidth, building.towerHeight);
+
+      // Roof triangle
+      ctx.fillStyle = '#555555';
+      ctx.beginPath();
+      ctx.moveTo(towerX, baseY - building.height - building.towerHeight);
+      ctx.lineTo(towerX + towerWidth / 2, baseY - building.height - building.towerHeight - 15);
+      ctx.lineTo(towerX + towerWidth, baseY - building.height - building.towerHeight);
+      ctx.closePath();
+      ctx.fill();
     }
 
-    // Windows
-    const windowWidth = 6;
-    const windowHeight = 8;
-    const gapX = 6;
-    const gapY = 10;
-    ctx.fillStyle = '#bbb';
+    // Windows on main building - aligned grid with bright yellow windows
+    const windowW = 8;
+    const windowH = 10;
+    const gapX = 8;
+    const gapY = 12;
 
-    // Windows main building
-    for (let wx = building.x + 5; wx < building.x + building.width - windowWidth; wx += windowWidth + gapX) {
-      for (let wy = baseY - building.height + 10; wy < baseY - 15; wy += windowHeight + gapY) {
-        if (Math.random() < 0.6) ctx.fillRect(wx, wy, windowWidth, windowHeight);
-      }
-    }
-
-    // Windows tower
-    if (building.towerHeight > 0) {
-      for (let wx = building.x + (building.width * 0.35); wx < building.x + (building.width * 0.65) - windowWidth; wx += windowWidth + gapX) {
-        for (let wy = baseY - building.height - building.towerHeight + 10; wy < baseY - building.height - 10; wy += windowHeight + gapY) {
-          if (Math.random() < 0.6) ctx.fillRect(wx, wy, windowWidth, windowHeight);
+    for (let wx = building.x + 6; wx < building.x + building.width - windowW; wx += windowW + gapX) {
+      for (let wy = baseY - building.height + 10; wy < baseY - 20; wy += windowH + gapY) {
+        if (Math.random() < 0.6) {
+          ctx.fillStyle = '#ffd700'; // bright yellow windows
+          ctx.fillRect(wx, wy, windowW, windowH);
         }
       }
     }
-    ctx.fillStyle = '#999999';
+
+    // Windows on tower
+    if (building.towerHeight > 0) {
+      for (let wx = building.x + (building.width * 0.35); wx < building.x + (building.width * 0.65) - windowW; wx += windowW + gapX) {
+        for (let wy = baseY - building.height - building.towerHeight + 10; wy < baseY - building.height - 10; wy += windowH + gapY) {
+          if (Math.random() < 0.6) {
+            ctx.fillStyle = '#ffd700'; // bright yellow windows on tower
+            ctx.fillRect(wx, wy, windowW, windowH);
+          }
+        }
+      }
+    }
   });
 }
 
@@ -206,25 +226,14 @@ function updateSnowflakes() {
   }
 }
 
-// Initial setup
 createBuildings(20);
-createCars(7);
+createCars(8);
 createSnowflakes(150);
+setInterval(drawSnowflakes, 33);
 
-function animate() {
-  drawSnowflakes();
-  requestAnimationFrame(animate);
-}
-animate();
-
-// Handle resize and re-create scene
 window.addEventListener('resize', () => {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
-  buildings.length = 0;
-  cars.length = 0;
-  createBuildings(20);
-  createCars(7);
 });
 </script>
   <main>
