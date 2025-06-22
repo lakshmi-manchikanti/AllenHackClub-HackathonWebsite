@@ -5,6 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Allen Hack Club - Hackathon</title>
   <link rel="stylesheet" href="styling.css" />
+  <style>
+    /* Canvas covers entire viewport behind everything */
+    #matrix {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
+      display: block;
+    }
+
+    /* You can add any other CSS for your page here */
+  </style>
 </head>
 <body>
   <header>
@@ -19,9 +33,12 @@
       <h2>Code. Create. Collaborate.</h2>
       <p>Join students across Allen and beyond for a day of hacking, learning, and innovation. Beginners welcome!</p>
     </section>
-    
+
     <section class="cta">
-      <a href="#register" class="cta-btn">Reserve Your Spot</a>
+      <div class="laptop-container">
+        <a href="#register" class="cta-btn">Reserve Your Spot</a>
+      </div>
+      <div class="laptop-base"></div>
     </section>
 
     <section id="about">
@@ -70,12 +87,6 @@
       canvas.width = width;
       canvas.height = height;
     }
-    resize();
-    window.addEventListener('resize', () => {
-      resize();
-      createBuildings();
-      createSnowflakes(150);
-    });
 
     function createBuildings() {
       buildings = [];
@@ -83,7 +94,7 @@
       while (xPos < width) {
         const bWidth = 30 + Math.random() * 30;
         const bHeight = 100 + Math.random() * 120;
-        const roofType = Math.floor(Math.random() * 3); // 0=flat,1=triangle,2=slanted
+        const roofType = Math.floor(Math.random() * 3); // 0=flat,1=triangle,2=slant
         const showBillboard = Math.random() < 0.5;
         buildings.push({ x: xPos, width: bWidth, height: bHeight, roofType, showBillboard });
         xPos += bWidth + 15;
@@ -98,8 +109,16 @@
       const gapX = 8;
       const gapY = 12;
 
-      for (let wx = building.x + 6; wx < building.x + building.width - windowW; wx += windowW + gapX) {
-        for (let wy = baseY - building.height + 10; wy < baseY - 20; wy += windowH + gapY) {
+      for (
+        let wx = building.x + 6;
+        wx < building.x + building.width - windowW;
+        wx += windowW + gapX
+      ) {
+        for (
+          let wy = baseY - building.height + 10;
+          wy < baseY - 20;
+          wy += windowH + gapY
+        ) {
           windows.push({ x: wx, y: wy });
         }
       }
@@ -110,27 +129,26 @@
       const x = building.x;
       const y = baseY - building.height;
       const w = building.width;
-      const roofHeight = 20;
+      const h = building.height;
 
-      ctx.fillStyle = '#666666';
-      ctx.beginPath();
+      ctx.fillStyle = '#555555';
 
       switch (building.roofType) {
         case 0: // flat roof
-          ctx.fillRect(x, y - roofHeight / 2, w, roofHeight / 2);
+          ctx.fillRect(x, y - 10, w, 10);
           break;
-
         case 1: // triangle roof
+          ctx.beginPath();
           ctx.moveTo(x, y);
-          ctx.lineTo(x + w / 2, y - roofHeight);
+          ctx.lineTo(x + w / 2, y - 30);
           ctx.lineTo(x + w, y);
           ctx.closePath();
           ctx.fill();
           break;
-
-        case 2: // slanted roof (right slope)
+        case 2: // slant roof
+          ctx.beginPath();
           ctx.moveTo(x, y);
-          ctx.lineTo(x + w, y - roofHeight);
+          ctx.lineTo(x + w, y - 25);
           ctx.lineTo(x + w, y);
           ctx.closePath();
           ctx.fill();
@@ -139,25 +157,34 @@
     }
 
     function drawBuildings() {
-      const baseY = height;  // buildings sit at bottom
+      const baseY = height;
 
       buildings.forEach((building, index) => {
-        let grad = ctx.createLinearGradient(building.x, baseY - building.height, building.x, baseY);
+        // Building body gradient
+        let grad = ctx.createLinearGradient(
+          building.x,
+          baseY - building.height,
+          building.x,
+          baseY
+        );
         grad.addColorStop(0, '#bbbbbb');
         grad.addColorStop(1, '#777777');
         ctx.fillStyle = grad;
         ctx.fillRect(building.x, baseY - building.height, building.width, building.height);
 
+        // Roof
         drawBuildingRoof(building, baseY);
 
+        // Windows
         if (!buildingWindows[index]) {
           buildingWindows[index] = calculateWindows(building, baseY);
         }
         ctx.fillStyle = '#ffd700';
-        buildingWindows[index].forEach(win => {
+        buildingWindows[index].forEach((win) => {
           ctx.fillRect(win.x, win.y, 8, 10);
         });
 
+        // Billboard
         if (building.showBillboard) {
           const boardHeight = 25;
           const boardWidth = building.width * 0.8;
@@ -184,42 +211,56 @@
           y: Math.random() * height,
           radius: Math.random() * 3 + 1,
           speed: Math.random() * 1 + 0.5,
-          drift: Math.random() * 1 - 0.5
+          drift: Math.random() * 1 - 0.5,
         });
       }
     }
 
     function drawSnowflakes() {
-      ctx.clearRect(0, 0, width, height);
+      ctx.fillStyle = 'white';
+      ctx.beginPath();
+      for (const flake of snowflakes) {
+        ctx.moveTo(flake.x, flake.y);
+        ctx.arc(flake.x, flake.y, flake.radius, 0, Math.PI * 2);
+      }
+      ctx.fill();
+    }
 
-      drawBuildings();
+    function updateSnowflakes() {
+      for (const flake of snowflakes) {
+        flake.y += flake.speed;
+        flake.x += flake.drift;
 
-      ctx.fillStyle = "white";
-      snowflakes.forEach(snowflake => {
-        ctx.beginPath();
-        ctx.arc(snowflake.x, snowflake.y, snowflake.radius, 0, Math.PI * 2);
-        ctx.fill();
-
-        snowflake.y += snowflake.speed;
-        snowflake.x += snowflake.drift;
-
-        if (snowflake.y > height) {
-          snowflake.y = -snowflake.radius;
-          snowflake.x = Math.random() * width;
+        if (flake.y > height) {
+          flake.y = -flake.radius;
+          flake.x = Math.random() * width;
         }
-        if (snowflake.x > width) snowflake.x = 0;
-        if (snowflake.x < 0) snowflake.x = width;
-      });
+        if (flake.x > width) flake.x = 0;
+        else if (flake.x < 0) flake.x = width;
+      }
     }
 
-    function loop() {
+    function animate() {
+      ctx.clearRect(0, 0, width, height);
+      drawBuildings();
       drawSnowflakes();
-      requestAnimationFrame(loop);
+      updateSnowflakes();
+      requestAnimationFrame(animate);
     }
 
-    createBuildings();
-    createSnowflakes(150);
-    loop();
+    // Initial setup & resize handling
+    function setup() {
+      resize();
+      createBuildings();
+      createSnowflakes(width < 600 ? 70 : 150);
+    }
+
+    window.addEventListener('resize', () => {
+      setup();
+    });
+
+    setup();
+    animate();
   </script>
 </body>
 </html>
