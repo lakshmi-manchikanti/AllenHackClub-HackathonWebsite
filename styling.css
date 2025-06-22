@@ -19,7 +19,7 @@ header h1 {
   padding: 2em 1em;
   position: relative;
   z-index: 1;
-  color: white;
+  color: rgb(0, 0, 0);
 }
 header h1, header p {
   margin: 0;
@@ -48,12 +48,12 @@ section {
 .hero h2 {
   font-size: 2rem;
   margin-bottom: 1rem;
-  color: #ffffff;
+  color: #000000;
 }
 
 .hero p {
   font-size: 1.2rem;
-  color: #0073ff;
+  color: #000000;
   margin-bottom: 1.5rem;
 }
 
@@ -76,17 +76,17 @@ section {
 h2 {
   font-size: 1.8rem;
   margin-bottom: 1rem;
-  color: #ffffff;
+  color: #000000;
 }
 
 .faq h3 {
-  color: #ffffff;
+  color: #000000;
   margin-bottom: 0.2rem;
 }
 
 .faq p {
   margin-bottom: 1.2rem;
-  color: #0073ff;
+  color: #000000;
 }
 
 .cta {
@@ -111,7 +111,7 @@ h2 {
 }
 
 #contact a {
-  color: #0073ff;
+  color: #000000;
   text-decoration: underline;
 }
 
