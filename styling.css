@@ -149,3 +149,11 @@ h1, h2, h3 {
     0 0 30px #00ff88,
     0 0 40px #00ff88;
 }
+/* Override glowing text for these sections */
+#about h2,
+#faq h2,
+#faq h3,
+#contact h2 {
+  color: #000 !important;
+  text-shadow: none !important;
+}
