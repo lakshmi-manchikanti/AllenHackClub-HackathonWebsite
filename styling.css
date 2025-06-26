@@ -77,18 +77,18 @@ section {
 .cta-btn {
   display: inline-block;
   padding: 12px 24px;
-  background-color: #000;
-  color: #53a712;
+  background-color: #000000;         /* Black button */
+  color: #00ff88;                    /* Green text */
   text-decoration: none;
   font-weight: bold;
   border-radius: 8px;
   transition: box-shadow 0.3s ease, transform 0.3s ease;
-  box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+  box-shadow: 0 0 10px rgba(0, 255, 136, 0.3); /* soft green glow */
   margin-top: 1rem;
 }
 
 .cta-btn:hover {
-  box-shadow: 0 0 20px rgba(3, 87, 242, 0.9), 0 0 30px rgba(177, 5, 220, 0.7);
+  box-shadow: 0 0 20px #00ff88, 0 0 30px #00ff88; /* stronger green glow on hover */
   transform: scale(1.05);
 }
 
