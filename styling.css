@@ -1,125 +1,20 @@
+/* Reset and base */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
 }
 
 body {
   margin: 0;
   padding: 0;
-  font-family: 'Segoe UI', sans-serif;
   background: linear-gradient(to bottom, #91d0ed, #addcf5);
-  color: #fff;
+  color: #000;
   overflow-x: hidden;
 }
 
-header h1 {
-  text-align: center;
-  padding: 2em 1em;
-  position: relative;
-  z-index: 1;
-  color: rgb(0, 0, 0);
-}
-header h1, header p {
-  margin: 0;
-}
-
-header p {
-  display: block;
-  width: 100%;
-  text-align: center;
-}
-
-main {
-  padding: 3rem 1rem;
-  max-width: 1000px;
-  margin: auto;
-}
-
-section {
-  margin-bottom: 4rem;
-}
-
-.hero {
-  text-align: center;
-}
-
-.hero h2 {
-  font-size: 2rem;
-  margin-bottom: 1rem;
-  color: #000000;
-}
-
-.hero p {
-  font-size: 1.2rem;
-  color: #000000;
-  margin-bottom: 1.5rem;
-}
-
-.hero-btn {
-  background: #38bdf8;
-  color: #000000;
-  padding: 0.9rem 1.7rem;
-  border-radius: 10px;
-  text-decoration: none;
-  font-weight: bold;
-  transition: all 0.3s ease;
-}
-
-.hero-btn:hover {
-  background: #0ea5e9;
-}
-
-
-
-h2 {
-  font-size: 1.8rem;
-  margin-bottom: 1rem;
-  color: #000000;
-}
-
-.faq h3 {
-  color: #000000;
-  margin-bottom: 0.2rem;
-}
-
-.faq p {
-  margin-bottom: 1.2rem;
-  color: #000000;
-}
-
-.cta {
-  text-align: center;
-}
-
-.cta-btn {
-  display: inline-block;
-  padding: 12px 24px;
-  background-color: #000000;
-  color: #53a712;
-  text-decoration: none;
-  font-weight: bold;
-  border-radius: 8px;
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
-  box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
-}
-
-.cta-btn:hover {
-  box-shadow: 0 0 20px rgba(3, 87, 242, 0.9), 0 0 30px rgba(177, 5, 220, 0.7);
-  transform: scale(1.05);
-}
-
-#contact a {
-  color: #000000;
-  text-decoration: underline;
-}
-
-footer {
-  text-align: center;
-  font-size: 0.9rem;
-}
-
+/* Canvas background */
 #matrix {
   position: fixed;
   top: 0;
@@ -128,30 +23,103 @@ footer {
   width: 100vw;
   height: 100vh;
   pointer-events: none;
+  display: block;
 }
-.laptop-container {
-  display: inline-block;
-  padding: 20px 40px;
-  background: #2d2d2d; /* laptop screen background */
-  border-radius: 12px 12px 0 0;
-  box-shadow: 0 0 10px rgba(0,0,0,0.6);
-  margin: 2rem auto 0 auto;
-  max-width: max-content;
+
+/* Header */
+header {
+  text-align: center;
+  padding: 2em 1em;
+  background-color: rgba(255, 255, 255, 0.85);
+  color: #000;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+header h1,
+header p {
+  margin: 0;
+}
+
+/* Main layout */
+main {
+  padding: 3rem 1rem;
+  max-width: 1000px;
+  margin: auto;
+}
+
+/* Section spacing */
+section {
+  margin-bottom: 4rem;
+}
+
+/* Hero section */
+.hero {
   text-align: center;
 }
 
-/* Laptop base below the screen */
-.laptop-base {
-  width: 160px;  /* slightly wider than screen */
-  height: 30px;
-  background: #555;
-  border-radius: 0 0 20px 20px;
-  margin: 0 auto;
-  box-shadow: inset 0 -3px 5px rgba(0,0,0,0.4);
-  margin-top: 5px; /* space below screen */
+.hero h2 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: #000;
 }
-#matrix {
-  display: block;
-  width: 100%;
-  height: 200px;
+
+.hero p {
+  font-size: 1.2rem;
+  color: #000;
+  margin-bottom: 1.5rem;
+}
+
+/* CTA button */
+.cta {
+  text-align: center;
+}
+
+.cta-btn {
+  display: inline-block;
+  padding: 12px 24px;
+  background-color: #000;
+  color: #53a712;
+  text-decoration: none;
+  font-weight: bold;
+  border-radius: 8px;
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+  margin-top: 1rem;
+}
+
+.cta-btn:hover {
+  box-shadow: 0 0 20px rgba(3, 87, 242, 0.9), 0 0 30px rgba(177, 5, 220, 0.7);
+  transform: scale(1.05);
+}
+
+/* FAQ section */
+h2 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  color: #000;
+}
+
+.faq h3 {
+  color: #000;
+  margin-bottom: 0.2rem;
+}
+
+.faq p {
+  margin-bottom: 1.2rem;
+  color: #000;
+}
+
+/* Contact section */
+#contact a {
+  color: #000;
+  text-decoration: underline;
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  font-size: 0.9rem;
+  background-color: #f2f2f2;
+  padding: 1rem;
+  color: #000;
 }
