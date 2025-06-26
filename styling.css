@@ -43,7 +43,8 @@ header p {
   text-align: right;
   margin: -5pt;
   padding: 0;
-  transform: translateY(50%);
+  right: 50%;
+  transform: translateY(75%);
 }
 
 .login-btn
