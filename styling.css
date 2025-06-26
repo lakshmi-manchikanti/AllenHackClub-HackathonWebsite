@@ -39,6 +39,10 @@ header p {
   margin: 0;
 }
 
+header a {
+  text-align: right;
+}
+
 /* Main layout */
 main {
   padding: 3rem 1rem;
