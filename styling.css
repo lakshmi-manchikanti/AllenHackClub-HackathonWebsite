@@ -41,7 +41,8 @@ header p {
 
 .login {
   text-align: right;
-  margin: 0;
+  margin: -3;
+  color: #00ff88;
 }
 
 /* Main layout */
