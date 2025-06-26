@@ -39,8 +39,8 @@ header p {
   margin: 0;
 }
 
-.login-right{
-  float: right;
+header p1 {
+  text-align: right;
 }
 
 /* Main layout */
