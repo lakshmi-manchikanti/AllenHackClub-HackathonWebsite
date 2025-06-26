@@ -122,3 +122,30 @@ footer {
   padding: 1rem;
   color: #000;
 }
+/* Glowing text for headings */
+h1, h2, h3 {
+  color: #00ff88; /* Neon green base color */
+  text-shadow:
+    0 0 5px #00ff88,
+    0 0 10px #00ff88,
+    0 0 20px #00ff88,
+    0 0 40px #00ff88;
+}
+
+/* Make the CTA button text glow even more */
+.cta-btn {
+  color: #00ff88;
+  text-shadow:
+    0 0 5px #00ff88,
+    0 0 10px #00ff88,
+    0 0 15px #00ff88;
+}
+
+/* Optional: stronger glow on hover */
+.cta-btn:hover {
+  text-shadow:
+    0 0 10px #00ff88,
+    0 0 20px #00ff88,
+    0 0 30px #00ff88,
+    0 0 40px #00ff88;
+}
