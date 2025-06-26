@@ -41,7 +41,7 @@ header p {
 
 .login {
   text-align: right;
-  margin-top: 0;
+  margin: -10;
 }
 
 .login-btn
