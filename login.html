@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - AHC Hackathon 2025</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: #f4f4f4;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .login-container {
+            background: #fff;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 320px;
+            text-align: left;
+        }
+        .login-form input[type="text"],
+        .login-form input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .login-form input[type="checkbox"] {
+            margin-right: 8px;
+        }
+        .login-form button {
+            width: 100%;
+            padding: 10px;
+            background: #2ecc71;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .login-form button:hover {
+            background: #27ae60;
+        }
+        .forgot-password {
+            float: right;
+            color: #2ecc71;
+            text-decoration: none;
+            font-size: 12px;
+        }
+        .forgot-password:hover {
+            text-decoration: underline;
+        }
+        .sso-options {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .sso-options a {
+            display: inline-block;
+            padding: 10px;
+            background: #fff;
+            color: #757575;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .sso-options a:hover {
+            background: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <form class="login-form" id="loginForm" onsubmit="handleLogin(event)">
+            <div>
+                <label>Email</label>
+                <input type="text" id="email" placeholder="Enter your email address" required>
+            </div>
+            <div>
+                <label>Password</label>
+                <input type="password" id="password" placeholder="Enter your password" required>
+            </div>
+            <div style="margin: 10px 0;">
+                <input type="checkbox" id="rememberMe">
+                <label for="rememberMe">Remember me</label>
+                <a href="#" class="forgot-password">Forgot password?</a>
+            </div>
+            <button type="submit">Sign in</button>
+        </form>
+        <div class="sso-options">
+            <p>or continue with</p>
+            <a href="#" onclick="handleSSOLogin('google')">
+                <img src="https://www.google.com/favicon.ico" alt="Google" style="vertical-align: middle; width: 16px; height: 16px;"> Sign in with Google
+            </a>
+        </div>
+        <div id="status" style="margin-top: 10px; color: #2ecc71; font-size: 12px;"></div>
+    </div>
+
+    <script>
+        function handleLogin(event) {
+            event.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            if (email === 'user@example.com' && password === 'pass') {
+                localStorage.setItem('loggedIn', 'true');
+                window.location.href = 'index.html';
+            } else {
+                document.getElementById('status').textContent = 'Invalid email or password!';
+            }
+        }
+
+        function handleSSOLogin(provider) {
+            document.getElementById('status').textContent = `Redirecting to ${provider} SSO...`;
+            setTimeout(() => {
+                if (Math.random() > 0.2) {
+                    localStorage.setItem('loggedIn', 'true');
+                    window.location.href = 'index.html';
+                } else {
+                    document.getElementById('status').textContent = 'SSO failed, please try again.';
+                }
+            }, 1500);
+        }
+    </script>
+</body>
+</html>
